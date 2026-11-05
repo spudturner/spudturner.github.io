@@ -123,7 +123,7 @@ async function run() {
 
             html += `
                 <tr>
-                    <td>+${elevation} ft</td>
+                    <td>${elevation > 0 ? "+" : ""}${elevation} ft</td>
                     <td>${forecastTemp.toFixed(1)} °F</td>
                 </tr>
             `;

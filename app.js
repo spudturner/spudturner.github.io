@@ -1,44 +1,3 @@
-const map = L.map("map").setView([39.7392, -104.99], 10);
-
-L.tileLayer(
-    "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
-    {
-        maxZoom: 17,
-        attribution: "© OpenTopoMap"
-    }
-).addTo(map);
-
-let marker = null;
-let chart = null;
-
-map.on("click", (e) => {
-    document.getElementById("lat").value =
-        e.latlng.lat.toFixed(6);
-
-    document.getElementById("lon").value =
-        e.latlng.lng.toFixed(6);
-});
-
-document
-    .getElementById("forecastBtn")
-    .addEventListener("click", run);
-
-document
-    .getElementById("locateBtn")
-    .addEventListener("click", () => {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-
-                document.getElementById("lat").value =
-                    position.coords.latitude.toFixed(6);
-
-                document.getElementById("lon").value =
-                    position.coords.longitude.toFixed(6);
-
-                run();
-            }
-        );
-    });
 
 async function run() {
 
@@ -50,38 +9,56 @@ async function run() {
         document.getElementById("lon").value
     );
 
-    if (!Number.isFinite(la) ||
-        !Number.isFinite(lo)) {
-
+    if (
+        !Number.isFinite(la) ||
+        !Number.isFinite(lo) ||
+        la < -90 || la > 90 ||
+        lo < -180 || lo > 180
+    ) {
         alert("Enter valid coordinates");
         return;
     }
 
     try {
 
+        // Remove the previous marker
         if (marker) {
             map.removeLayer(marker);
         }
 
-        marker = L.marker([la, lo])
-            .addTo(map);
-
+        marker = L.marker([la, lo]).addTo(map);
         map.setView([la, lo], 12);
 
-        const response =
-            await fetch(
-                `https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&current=temperature_2m,relative_humidity_2m,wind_speed_10m`
-            );
+        // Request weather and elevation simultaneously
+        const weatherURL =
+            `https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&current=temperature_2m,relative_humidity_2m,wind_speed_10m&wind_speed_unit=mph`;
 
-        const weather =
-            await response.json();
+        const elevationURL =
+            `https://api.open-meteo.com/v1/elevation?latitude=${la}&longitude=${lo}`;
 
-        if (!weather.current) {
-            throw new Error(
-                "Weather data unavailable"
-            );
+        const [weatherResponse, elevationResponse] =
+            await Promise.all([
+                fetch(weatherURL),
+                fetch(elevationURL)
+            ]);
+
+        // Check for HTTP errors
+        if (!weatherResponse.ok || !elevationResponse.ok) {
+            throw new Error("API request failed");
         }
 
+        const weather = await weatherResponse.json();
+        const elevationData = await elevationResponse.json();
+
+        if (
+            !weather.current ||
+            !elevationData.elevation ||
+            elevationData.elevation[0] == null
+        ) {
+            throw new Error("Weather or elevation data unavailable");
+        }
+
+        // Convert temperature to Fahrenheit
         const tempF =
             (weather.current.temperature_2m * 9 / 5) + 32;
 
@@ -91,25 +68,25 @@ async function run() {
         const wind =
             weather.current.wind_speed_10m;
 
-        // Estimate elevation table relative to surface
-        // until a CORS-safe elevation source is added
-
-        const startingElevation = 0;
+        // Convert actual elevation from meters to feet
+        const startingElevation =
+            elevationData.elevation[0] * 3.28084;
 
         let html = `
             <h3>Current Conditions</h3>
 
             <p>
-                Temperature:
-                ${tempF.toFixed(1)}°F
+                Temperature: ${tempF.toFixed(1)}°F
                 <br>
 
-                Humidity:
-                ${humidity}%
+                Humidity: ${humidity}%
                 <br>
 
-                Wind:
-                ${wind}
+                Wind: ${wind} mph
+                <br>
+
+                Ground Elevation:
+                ${startingElevation.toFixed(0)} ft
             </p>
 
             <table style="width:100%;">
@@ -122,22 +99,26 @@ async function run() {
         const chartLabels = [];
         const chartData = [];
 
+        // Generate temperatures at 1,000-foot intervals
         for (
             let elevation = 0;
             elevation <= 12000;
             elevation += 1000
         ) {
 
-            const forecastTemp =
-                tempF -
-                ((elevation / 1000) * 3.6);
+            // Calculate elevation difference from starting location
+            const elevationDifference =
+                elevation - startingElevation;
 
-            chartLabels.push(
-                elevation.toString()
-            );
+            // Estimate temperature change:
+            // 3.6°F per 1,000 feet
+            const forecastTemp =
+                tempF - ((elevationDifference / 1000) * 3.6);
+
+            chartLabels.push(elevation.toString());
 
             chartData.push(
-                forecastTemp.toFixed(1)
+                Number(forecastTemp.toFixed(1))
             );
 
             html += `
@@ -150,12 +131,16 @@ async function run() {
 
         html += "</table>";
 
-        document.getElementById(
-            "results"
-        ).innerHTML = html;
+        html += `
+            <p style="font-size: 12px;">
+                Elevation data: Open-Meteo / Copernicus DEM
+            </p>
+        `;
 
-        const ctx =
-            document.getElementById("chart");
+        document.getElementById("results").innerHTML = html;
+
+        // Update chart
+        const ctx = document.getElementById("chart");
 
         if (chart) {
             chart.destroy();
@@ -163,36 +148,52 @@ async function run() {
 
         chart = new Chart(ctx, {
             type: "line",
+
             data: {
                 labels: chartLabels,
-                datasets: [
-                    {
-                        label:
-                            "Temperature by Elevation",
-                        data: chartData,
-                        borderColor: "red",
-                        borderWidth: 3,
-                        tension: 0.3
-                    }
-                ]
+
+                datasets: [{
+                    label: "Estimated Temperature by Elevation",
+                    data: chartData,
+                    borderColor: "red",
+                    borderWidth: 3,
+                    tension: 0.3
+                }]
             },
+
             options: {
-                responsive: true
+                responsive: true,
+
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: "Elevation (feet)"
+                        }
+                    },
+
+                    y: {
+                        title: {
+                            display: true,
+                            text: "Temperature (°F)"
+                        }
+                    }
+                }
             }
         });
 
     }
+
     catch (error) {
 
         console.error(error);
 
-        document.getElementById(
-            "results"
-        ).innerHTML =
-            `
+        document.getElementById("results").innerHTML = `
             <div style="color:#ff8080">
-                Weather service unavailable.
+                Weather or elevation service unavailable.
+                <br>
+                ${error.message}
             </div>
-            `;
+        `;
     }
 }

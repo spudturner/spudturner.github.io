@@ -126,7 +126,7 @@
             <section class="panel">
 
                 <div class="panel-heading">
-                    <h2>Elevation Temperature</h2>
+                    <h2>Elevation Temperature Estimate</h2>
                     <span class="chart-unit">°F</span>
                 </div>
 
@@ -141,31 +141,35 @@
             </section>
 
 
-            <!-- Route Planner -->
-            <section class="panel">
 
-                <div class="panel-heading">
-                    <h2>Route Planner</h2>
-                    <span class="route-icon">⌁</span>
-                </div>
+<!-- Route Planner -->
+<section class="panel">
 
-                <p class="panel-description">
-                    Plan and manage locations along your mountain route.
-                </p>
+    <div class="panel-heading">
+        <h2>Route Planner</h2>
+        <span class="route-icon">⌁</span>
+    </div>
 
-                <div class="route-actions">
-                    <button id="clearRoute" class="secondary-button">
-                        Clear Route
-                    </button>
-                </div>
+    <p class="panel-description">
+        Select locations on the map or enter coordinates, then add them to your route.
+    </p>
 
-                <div id="route" class="route-container">
-                    <p class="empty-route">
-                        No route points added yet.
-                    </p>
-                </div>
+    <div class="route-actions">
+        <button id="addRoutePoint" class="primary-button" type="button">
+            + Add Selected Location
+        </button>
 
-            </section>
+        <button id="clearRoute" class="secondary-button" type="button">
+            Clear Route
+        </button>
+    </div>
+
+    <div id="route" class="route-container">
+        <p class="empty-route">No route points added yet.</p>
+    </div>
+
+</section>
+
 
 
             <!-- Footer -->

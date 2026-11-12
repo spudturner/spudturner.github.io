@@ -421,3 +421,64 @@ button {
         font-size: 22px;
     }
 }
+
+/* ==============================
+   ROUTE PLANNER IMPROVEMENTS
+============================== */
+
+.route-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin-bottom: 12px;
+}
+
+.route-actions button {
+    width: 100%;
+    margin: 0;
+}
+
+.route-point {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px;
+    margin-bottom: 8px;
+    background: var(--panel-light);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+}
+
+.route-point strong,
+.route-point small {
+    display: block;
+}
+
+.route-point strong {
+    font-size: 12px;
+}
+
+.route-point small {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 10px;
+}
+
+.route-point .remove-route-point {
+    width: 30px;
+    min-width: 30px;
+    padding: 5px;
+    color: #ff8080;
+    background: transparent;
+    font-size: 20px;
+}
+
+.route-point .remove-route-point:hover {
+    background: rgba(255, 128, 128, 0.12);
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}

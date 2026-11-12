@@ -14,6 +14,49 @@ document.addEventListener("DOMContentLoaded", () => {
     const clearRouteBtn = document.getElementById("clearRoute");
     const addRouteBtn = document.getElementById("addRoutePoint");
 
+const LOCATION_STORAGE_KEY = "mountainForecastLastLocation";
+
+function saveLastLocation(lat, lon) {
+    try {
+        localStorage.setItem(
+            LOCATION_STORAGE_KEY,
+            JSON.stringify({
+                lat: Number(lat),
+                lon: Number(lon),
+                zoom: map.getZoom()
+            })
+        );
+    } catch (error) {
+        console.warn("Could not save location:", error);
+    }
+}
+
+function loadLastLocation() {
+    try {
+        const saved = localStorage.getItem(LOCATION_STORAGE_KEY);
+
+        if (!saved) return null;
+
+        const location = JSON.parse(saved);
+
+        if (
+            !Number.isFinite(location.lat) ||
+            !Number.isFinite(location.lon) ||
+            location.lat < -90 ||
+            location.lat > 90 ||
+            location.lon < -180 ||
+            location.lon > 180
+        ) {
+            return null;
+        }
+
+        return location;
+    } catch (error) {
+        console.warn("Could not load saved location:", error);
+        return null;
+    }
+}
+    
     if (
         !latInput || !lonInput || !forecastBtn ||
         !locateBtn || !results || !chartCanvas ||
@@ -28,7 +71,19 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("Leaflet did not load.");
         return;
     }
+// Restore the last selected location
+const savedLocation = loadLastLocation();
 
+if (savedLocation) {
+    selectLocation(savedLocation.lat, savedLocation.lon);
+
+    map.setView(
+        [savedLocation.lat, savedLocation.lon],
+        savedLocation.zoom || 10
+    );
+
+    console.log("Restored previous location:", savedLocation);
+}
     // ==============================
     // MAP
     // ==============================
@@ -114,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function selectLocation(lat, lon, moveMap = false) {
         selectedLocation = { lat, lon };
-
+        saveLastLocation(lat, lon);
         latInput.value = lat.toFixed(6);
         lonInput.value = lon.toFixed(6);
 
@@ -156,6 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function readAndSelectInputs() {
         const { lat, lon } = getCoordinates();
         selectLocation(lat, lon, true);
+        saveLastLocation(lat, lon);
         return { lat, lon };
     }
 

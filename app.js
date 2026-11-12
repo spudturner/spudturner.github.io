@@ -1,4 +1,33 @@
 
+// ==============================
+// MAP INITIALIZATION
+// ==============================
+
+const map = L.map("map").setView(
+    [39.7392, -104.99],
+    10
+);
+
+// Load topographic map tiles
+L.tileLayer(
+    "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+    {
+        maxZoom: 17,
+        attribution: '&copy; <a href="https://opentopomap.org">OpenTopoMap</a> contributors'
+    }
+).addTo(map);
+
+// Map variables
+let marker = null;
+let chart = null;
+
+// Fix map sizing after page loads
+window.addEventListener("load", () => {
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 200);
+});
+
 async function run() {
 
     const la = parseFloat(

@@ -1,418 +1,192 @@
-```css
-/* ==============================
-   GLOBAL STYLES
-============================== */
-
-* {
-    box-sizing: border-box;
-}
-
-:root {
-    --background: #101820;
-    --panel: #192630;
-    --panel-light: #223440;
-    --border: #30434e;
-    --text: #edf3f5;
-    --muted: #9aabb5;
-    --accent: #73b9a0;
-    --accent-hover: #8bd1b5;
-}
-
-body {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: var(--background);
-    color: var(--text);
-}
-
-button,
-input {
-    font: inherit;
-}
-
-
-/* ==============================
-   MAIN LAYOUT
-============================== */
-
-.app-container {
-    display: flex;
-    width: 100%;
-    height: 100vh;
-    overflow: hidden;
-}
-
-.map-container {
-    position: relative;
-    flex: 1;
-    min-width: 0;
-}
-
-#map {
-    width: 100%;
-    height: 100%;
-    background: #263b42;
-}
-
-
-/* ==============================
-   MAP BRAND OVERLAY
-============================== */
-
-.map-overlay {
-    position: absolute;
-    z-index: 500;
-    top: 20px;
-    left: 20px;
-}
-
-.map-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 13px 18px;
-    background: rgba(16, 24, 32, 0.93);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 5px 20px rgba(0,0,0,0.25);
-}
-
-.brand-icon {
-    color: var(--accent);
-    font-size: 27px;
-}
-
-.map-brand strong {
-    display: block;
-    font-size: 15px;
-}
-
-.map-brand small {
-    display: block;
-    margin-top: 4px;
-    color: var(--muted);
-    font-size: 11px;
-}
-
-
-/* ==============================
-   SIDEBAR
-============================== */
-
-#sidebar {
-    width: 410px;
-    min-width: 350px;
-    height: 100%;
-    padding: 25px;
-    overflow-y: auto;
-    background: var(--background);
-    border-left: 1px solid var(--border);
-}
-
-.sidebar-header {
-    margin-bottom: 25px;
-}
-
-.section-label {
-    color: var(--accent);
-    font-size: 10px;
-    font-weight: bold;
-    letter-spacing: 2px;
-}
-
-.sidebar-header h1 {
-    margin: 9px 0;
-    font-size: 25px;
-    line-height: 1.2;
-}
-
-.sidebar-header p {
-    color: var(--muted);
-    font-size: 13px;
-    line-height: 1.5;
-}
-
-
-/* ==============================
-   PANELS
-============================== */
-
-.panel {
-    margin-bottom: 18px;
-    padding: 18px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-}
-
-.panel-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 17px;
-}
-
-.panel-heading h2 {
-    margin: 0;
-    font-size: 15px;
-    font-weight: 600;
-}
-
-.status-indicator {
-    color: var(--accent);
-    font-size: 11px;
-}
-
-.chart-unit {
-    color: var(--muted);
-    font-size: 12px;
-}
-
-.panel-description {
-    color: var(--muted);
-    font-size: 12px;
-    line-height: 1.5;
-}
-
-
-/* ==============================
-   INPUTS
-============================== */
-
-.coordinate-inputs {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 15px;
-}
-
-.input-group {
-    flex: 1;
-    min-width: 0;
-}
-
-.input-group label {
-    display: block;
-    margin-bottom: 7px;
-    color: var(--muted);
-    font-size: 11px;
-}
-
-.input-group input {
-    width: 100%;
-    padding: 11px;
-    color: var(--text);
-    background: var(--background);
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    outline: none;
-}
-
-.input-group input:focus {
-    border-color: var(--accent);
-}
-
-.input-hint {
-    margin-bottom: 0;
-    color: var(--muted);
-    font-size: 10px;
-    line-height: 1.5;
-}
-
-
-/* ==============================
-   BUTTONS
-============================== */
-
-button {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 7px;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
-
-.primary-button {
-    margin-bottom: 10px;
-    color: #10221d;
-    background: var(--accent);
-    font-weight: bold;
-}
-
-.primary-button:hover {
-    background: var(--accent-hover);
-}
-
-.secondary-button {
-    color: var(--text);
-    background: var(--panel-light);
-    border: 1px solid var(--border);
-}
-
-.secondary-button:hover {
-    background: #304753;
-}
-
-
-/* ==============================
-   RESULTS
-============================== */
-
-.results-container {
-    font-size: 13px;
-    line-height: 1.7;
-}
-
-.results-container h3 {
-    margin-top: 0;
-}
-
-.results-container table {
-    border-collapse: collapse;
-    margin-top: 15px;
-    font-size: 12px;
-}
-
-.results-container th,
-.results-container td {
-    padding: 9px 5px;
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-}
-
-.results-container th {
-    color: var(--accent);
-}
-
-.empty-state {
-    padding: 15px 5px;
-    text-align: center;
-}
-
-.empty-icon {
-    font-size: 32px;
-}
-
-.empty-state h3 {
-    margin: 10px 0;
-    font-size: 14px;
-}
-
-.empty-state p {
-    color: var(--muted);
-    font-size: 12px;
-    line-height: 1.6;
-}
-
-
-/* ==============================
-   CHART
-============================== */
-
-.chart-container {
-    position: relative;
-    width: 100%;
-    height: 220px;
-}
-
-.chart-caption {
-    margin-bottom: 0;
-    color: var(--muted);
-    font-size: 10px;
-}
-
-
-/* ==============================
-   ROUTE PLANNER
-============================== */
-
-.route-icon {
-    color: var(--accent);
-    font-size: 22px;
-}
-
-.route-actions {
-    margin-bottom: 12px;
-}
-
-.route-container {
-    font-size: 12px;
-}
-
-.empty-route {
-    color: var(--muted);
-    text-align: center;
-    padding: 12px 0;
-}
-
-
-/* ==============================
-   FOOTER
-============================== */
-
-.sidebar-footer {
-    padding: 10px 0;
-    color: var(--muted);
-    font-size: 10px;
-    text-align: center;
-}
-
-.sidebar-footer span {
-    padding: 0 5px;
-    color: var(--accent);
-}
-
-
-/* ==============================
-   SCROLLBAR
-============================== */
-
-#sidebar::-webkit-scrollbar {
-    width: 6px;
-}
-
-#sidebar::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 10px;
-}
-
-
-/* ==============================
-   MOBILE LAYOUT
-============================== */
-
-@media (max-width: 800px) {
-
-    .app-container {
-        flex-direction: column;
-        height: auto;
-        min-height: 100vh;
-        overflow: visible;
-    }
-
-    .map-container {
-        flex: none;
-        height: 45vh;
-        min-height: 300px;
-    }
-
-    #sidebar {
-        width: 100%;
-        min-width: 0;
-        height: auto;
-        overflow: visible;
-        padding: 20px;
-        border-left: none;
-    }
-
-    .map-overlay {
-        top: 12px;
-        left: 12px;
-    }
-
-    .sidebar-header h1 {
-        font-size: 22px;
-    }
-}
-```
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="theme-color" content="#101820">
+    <meta name="description" content="Mountain Forecast Pro - Mountain weather, elevation temperature estimates, and route planning.">
+
+    <title>Mountain Forecast Pro</title>
+
+    <!-- Leaflet Map CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <!-- Main Application -->
+    <div class="app-container">
+
+        <!-- Map -->
+        <main class="map-container">
+            <div id="map"></div>
+
+            <div class="map-overlay">
+                <div class="map-brand">
+                    <span class="brand-icon">▲</span>
+                    <div>
+                        <strong>Mountain Forecast Pro</strong>
+                        <small>Mountain Weather & Terrain</small>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+
+        <!-- Sidebar -->
+        <aside id="sidebar">
+
+            <!-- Header -->
+            <header class="sidebar-header">
+                <div>
+                    <span class="section-label">WEATHER & TERRAIN</span>
+                    <h1>Mountain Forecast</h1>
+                    <p>Select a location to analyze mountain conditions.</p>
+                </div>
+            </header>
+
+
+            <!-- Location Selection -->
+            <section class="panel">
+
+                <div class="panel-heading">
+                    <h2>Location</h2>
+                    <span class="status-indicator">● Ready</span>
+                </div>
+
+                <div class="coordinate-inputs">
+
+                    <div class="input-group">
+                        <label for="lat">Latitude</label>
+                        <input
+                            type="number"
+                            id="lat"
+                            placeholder="39.7392"
+                            step="any"
+                        >
+                    </div>
+
+                    <div class="input-group">
+                        <label for="lon">Longitude</label>
+                        <input
+                            type="number"
+                            id="lon"
+                            placeholder="-104.9903"
+                            step="any"
+                        >
+                    </div>
+
+                </div>
+
+                <button id="forecastBtn" class="primary-button">
+                    Generate Forecast
+                </button>
+
+                <button id="locateBtn" class="secondary-button">
+                    ◎ Use My Location
+                </button>
+
+                <p class="input-hint">
+                    Tip: You can also click anywhere on the map to select coordinates.
+                </p>
+
+            </section>
+
+
+            <!-- Forecast Results -->
+            <section class="panel">
+
+                <div class="panel-heading">
+                    <h2>Current Conditions</h2>
+                </div>
+
+                <div id="results" class="results-container">
+                    <div class="empty-state">
+                        <span class="empty-icon">⛰</span>
+                        <h3>No Location Selected</h3>
+                        <p>Choose a point on the map or enter coordinates to generate a forecast.</p>
+                    </div>
+                </div>
+
+            </section>
+
+
+            <!-- Elevation Chart -->
+            <section class="panel">
+
+                <div class="panel-heading">
+                    <h2>Elevation Temperature</h2>
+                    <span class="chart-unit">°F</span>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="chart"></canvas>
+                </div>
+
+                <p class="chart-caption">
+                    Estimated temperature changes with elevation.
+                </p>
+
+            </section>
+
+
+            <!-- Route Planner -->
+            <section class="panel">
+
+                <div class="panel-heading">
+                    <h2>Route Planner</h2>
+                    <span class="route-icon">⌁</span>
+                </div>
+
+                <p class="panel-description">
+                    Plan and manage locations along your mountain route.
+                </p>
+
+                <div class="route-actions">
+                    <button id="clearRoute" class="secondary-button">
+                        Clear Route
+                    </button>
+                </div>
+
+                <div id="route" class="route-container">
+                    <p class="empty-route">
+                        No route points added yet.
+                    </p>
+                </div>
+
+            </section>
+
+
+            <!-- Footer -->
+            <footer class="sidebar-footer">
+                <p>
+                    Mountain Forecast Pro
+                    <span>•</span>
+                    Weather data powered by Open-Meteo
+                </p>
+            </footer>
+
+        </aside>
+
+    </div>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Application Logic -->
+    <script src="app.js"></script>
+
+</body>
+</html>

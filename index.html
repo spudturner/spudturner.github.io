@@ -1,1 +1,418 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mountain Forecast Pro</title><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><link rel="stylesheet" href="style.css"><script src="https://cdn.jsdelivr.net/npm/chart.js"></script></head><body><div id="map"></div><div id="sidebar"><h1>Mountain Forecast Pro</h1><div class="row"><input id="lat" placeholder="Latitude"><input id="lon" placeholder="Longitude"></div><button id="forecastBtn">Generate Forecast</button><button id="locateBtn">Use My Location</button><div id="results"></div><canvas id="chart"></canvas><h3>Route Planner</h3><button id="clearRoute">Clear Route</button><div id="route"></div></div><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="app.js"></script></body></html>
+```css
+/* ==============================
+   GLOBAL STYLES
+============================== */
+
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --background: #101820;
+    --panel: #192630;
+    --panel-light: #223440;
+    --border: #30434e;
+    --text: #edf3f5;
+    --muted: #9aabb5;
+    --accent: #73b9a0;
+    --accent-hover: #8bd1b5;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--background);
+    color: var(--text);
+}
+
+button,
+input {
+    font: inherit;
+}
+
+
+/* ==============================
+   MAIN LAYOUT
+============================== */
+
+.app-container {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.map-container {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+    background: #263b42;
+}
+
+
+/* ==============================
+   MAP BRAND OVERLAY
+============================== */
+
+.map-overlay {
+    position: absolute;
+    z-index: 500;
+    top: 20px;
+    left: 20px;
+}
+
+.map-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 18px;
+    background: rgba(16, 24, 32, 0.93);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+}
+
+.brand-icon {
+    color: var(--accent);
+    font-size: 27px;
+}
+
+.map-brand strong {
+    display: block;
+    font-size: 15px;
+}
+
+.map-brand small {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+
+/* ==============================
+   SIDEBAR
+============================== */
+
+#sidebar {
+    width: 410px;
+    min-width: 350px;
+    height: 100%;
+    padding: 25px;
+    overflow-y: auto;
+    background: var(--background);
+    border-left: 1px solid var(--border);
+}
+
+.sidebar-header {
+    margin-bottom: 25px;
+}
+
+.section-label {
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.sidebar-header h1 {
+    margin: 9px 0;
+    font-size: 25px;
+    line-height: 1.2;
+}
+
+.sidebar-header p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+/* ==============================
+   PANELS
+============================== */
+
+.panel {
+    margin-bottom: 18px;
+    padding: 18px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 17px;
+}
+
+.panel-heading h2 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.status-indicator {
+    color: var(--accent);
+    font-size: 11px;
+}
+
+.chart-unit {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.panel-description {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/* ==============================
+   INPUTS
+============================== */
+
+.coordinate-inputs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.input-group {
+    flex: 1;
+    min-width: 0;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 11px;
+    color: var(--text);
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    outline: none;
+}
+
+.input-group input:focus {
+    border-color: var(--accent);
+}
+
+.input-hint {
+    margin-bottom: 0;
+    color: var(--muted);
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+
+/* ==============================
+   BUTTONS
+============================== */
+
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.primary-button {
+    margin-bottom: 10px;
+    color: #10221d;
+    background: var(--accent);
+    font-weight: bold;
+}
+
+.primary-button:hover {
+    background: var(--accent-hover);
+}
+
+.secondary-button {
+    color: var(--text);
+    background: var(--panel-light);
+    border: 1px solid var(--border);
+}
+
+.secondary-button:hover {
+    background: #304753;
+}
+
+
+/* ==============================
+   RESULTS
+============================== */
+
+.results-container {
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.results-container h3 {
+    margin-top: 0;
+}
+
+.results-container table {
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 12px;
+}
+
+.results-container th,
+.results-container td {
+    padding: 9px 5px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+.results-container th {
+    color: var(--accent);
+}
+
+.empty-state {
+    padding: 15px 5px;
+    text-align: center;
+}
+
+.empty-icon {
+    font-size: 32px;
+}
+
+.empty-state h3 {
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+.empty-state p {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+
+/* ==============================
+   CHART
+============================== */
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 220px;
+}
+
+.chart-caption {
+    margin-bottom: 0;
+    color: var(--muted);
+    font-size: 10px;
+}
+
+
+/* ==============================
+   ROUTE PLANNER
+============================== */
+
+.route-icon {
+    color: var(--accent);
+    font-size: 22px;
+}
+
+.route-actions {
+    margin-bottom: 12px;
+}
+
+.route-container {
+    font-size: 12px;
+}
+
+.empty-route {
+    color: var(--muted);
+    text-align: center;
+    padding: 12px 0;
+}
+
+
+/* ==============================
+   FOOTER
+============================== */
+
+.sidebar-footer {
+    padding: 10px 0;
+    color: var(--muted);
+    font-size: 10px;
+    text-align: center;
+}
+
+.sidebar-footer span {
+    padding: 0 5px;
+    color: var(--accent);
+}
+
+
+/* ==============================
+   SCROLLBAR
+============================== */
+
+#sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+#sidebar::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 10px;
+}
+
+
+/* ==============================
+   MOBILE LAYOUT
+============================== */
+
+@media (max-width: 800px) {
+
+    .app-container {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+    }
+
+    .map-container {
+        flex: none;
+        height: 45vh;
+        min-height: 300px;
+    }
+
+    #sidebar {
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        overflow: visible;
+        padding: 20px;
+        border-left: none;
+    }
+
+    .map-overlay {
+        top: 12px;
+        left: 12px;
+    }
+
+    .sidebar-header h1 {
+        font-size: 22px;
+    }
+}
+```

@@ -28,6 +28,51 @@ window.addEventListener("load", () => {
     }, 200);
 });
 
+// ==============================
+// MAP CLICK COORDINATES
+// ==============================
+
+map.on("click", (e) => {
+
+    document.getElementById("lat").value =
+        e.latlng.lat.toFixed(6);
+
+    document.getElementById("lon").value =
+        e.latlng.lng.toFixed(6);
+
+});
+
+// Generate Forecast button
+document
+    .getElementById("forecastBtn")
+    .addEventListener("click", run);
+
+
+// Use My Location button
+document
+    .getElementById("locateBtn")
+    .addEventListener("click", () => {
+
+        navigator.geolocation.getCurrentPosition(
+
+            (position) => {
+
+                document.getElementById("lat").value =
+                    position.coords.latitude.toFixed(6);
+
+                document.getElementById("lon").value =
+                    position.coords.longitude.toFixed(6);
+
+                run();
+            },
+
+            (error) => {
+                alert("Unable to get your location: " + error.message);
+            }
+        );
+
+    });
+
 async function run() {
 
     const la = parseFloat(

@@ -1,39 +1,50 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+    <!-- Defines the character encoding so text and symbols display correctly. -->
     <meta charset="UTF-8">
+
+    <!-- Makes the layout scale correctly on phones, tablets, and desktops. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- Sets the browser's theme color, such as the mobile browser toolbar. -->
     <meta name="theme-color" content="#101820">
+
+    <!-- Provides a short description of the website for search engines. -->
     <meta name="description" content="Mountain Forecast Pro - Mountain weather, elevation temperature estimates, and route planning.">
 
+    <!-- The title displayed in the browser tab. -->
     <title>Mountain Forecast Pro</title>
 
-    <!-- Leaflet Map CSS -->
+    <!-- Leaflet Map CSS: provides the default styling needed for the interactive map. -->
     <link
         rel="stylesheet"
         href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     >
 
-    <!-- Main Stylesheet -->
+    <!-- Main Stylesheet: contains the custom appearance and layout of the application. -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- Chart.js -->
+    <!-- Chart.js: external JavaScript library used to create the elevation temperature chart. -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
 
-    <!-- Main Application -->
+    <!-- Main Application: wraps the map and sidebar into one overall layout. -->
     <div class="app-container">
 
-        <!-- Map -->
+        <!-- Map: the main map area occupies the available space beside the sidebar. -->
         <main class="map-container">
+            <!-- Leaflet uses this element as the location where the interactive map is displayed. -->
             <div id="map"></div>
 
+            <!-- Map Overlay: displays the application's name on top of the map. -->
             <div class="map-overlay">
                 <div class="map-brand">
+                    <!-- Decorative mountain symbol beside the application name. -->
                     <span class="brand-icon">▲</span>
                     <div>
                         <strong>Mountain Forecast Pro</strong>
@@ -44,10 +55,10 @@
         </main>
 
 
-        <!-- Sidebar -->
+        <!-- Sidebar: contains the location controls, weather results, chart, and route planner. -->
         <aside id="sidebar">
 
-            <!-- Header -->
+            <!-- Header: introduces the application and explains its purpose. -->
             <header class="sidebar-header">
                 <div>
                     <span class="section-label">WEATHER & TERRAIN</span>
@@ -57,18 +68,21 @@
             </header>
 
 
-            <!-- Location Selection -->
+            <!-- Location Selection: lets the user choose a location using coordinates or GPS. -->
             <section class="panel">
 
                 <div class="panel-heading">
                     <h2>Location</h2>
+                    <!-- Indicates that the application is ready for a location selection. -->
                     <span class="status-indicator">● Ready</span>
                 </div>
 
+                <!-- Coordinate Inputs: separate fields for latitude and longitude. -->
                 <div class="coordinate-inputs">
 
                     <div class="input-group">
                         <label for="lat">Latitude</label>
+                        <!-- The JavaScript reads this input to determine the north/south coordinate. -->
                         <input
                             type="number"
                             id="lat"
@@ -79,6 +93,7 @@
 
                     <div class="input-group">
                         <label for="lon">Longitude</label>
+                        <!-- The JavaScript reads this input to determine the east/west coordinate. -->
                         <input
                             type="number"
                             id="lon"
@@ -89,14 +104,17 @@
 
                 </div>
 
+                <!-- Clicking this button requests weather information for the entered coordinates. -->
                 <button id="forecastBtn" class="primary-button">
                     Generate Forecast
                 </button>
 
+                <!-- Clicking this button asks the browser for the user's current GPS location. -->
                 <button id="locateBtn" class="secondary-button">
                     ◎ Use My Location
                 </button>
 
+                <!-- Explains that the map can also be used to select coordinates. -->
                 <p class="input-hint">
                     Tip: You can also click anywhere on the map to select coordinates.
                 </p>
@@ -104,13 +122,17 @@
             </section>
 
 
-            <!-- Forecast Results -->
+            <!-- Forecast Results: JavaScript inserts the current weather information into this area. -->
             <section class="panel">
 
                 <div class="panel-heading">
                     <h2>Current Conditions</h2>
                 </div>
 
+                <!--
+                    This container initially displays a placeholder.
+                    JavaScript replaces its contents when a forecast is generated.
+                -->
                 <div id="results" class="results-container">
                     <div class="empty-state">
                         <span class="empty-icon">⛰</span>
@@ -122,18 +144,22 @@
             </section>
 
 
-            <!-- Elevation Chart -->
+            <!-- Elevation Chart: displays estimated temperature changes at different elevations. -->
             <section class="panel">
 
                 <div class="panel-heading">
                     <h2>Elevation Temperature Estimate</h2>
+                    <!-- Identifies the temperature unit used by the chart. -->
                     <span class="chart-unit">°F</span>
                 </div>
 
+                <!-- Chart Container: controls the size and position of the chart canvas. -->
                 <div class="chart-container">
+                    <!-- Chart.js draws the actual chart inside this canvas element. -->
                     <canvas id="chart"></canvas>
                 </div>
 
+                <!-- Explains what information the chart represents. -->
                 <p class="chart-caption">
                     Estimated temperature changes with elevation.
                 </p>
@@ -142,37 +168,48 @@
 
 
 
-<!-- Route Planner -->
-<section class="panel">
+            <!-- Route Planner: allows the user to build a route from multiple selected locations. -->
+            <section class="panel">
 
-    <div class="panel-heading">
-        <h2>Route Planner</h2>
-        <span class="route-icon">⌁</span>
-    </div>
+                <div class="panel-heading">
+                    <h2>Route Planner</h2>
+                    <!-- Decorative symbol identifying the route planning section. -->
+                    <span class="route-icon">⌁</span>
+                </div>
 
-    <p class="panel-description">
-        Select locations on the map or enter coordinates, then add them to your route.
-    </p>
+                <p class="panel-description">
+                    Select locations on the map or enter coordinates, then add them to your route.
+                </p>
 
-    <div class="route-actions">
-        <button id="addRoutePoint" class="primary-button" type="button">
-            + Add Selected Location
-        </button>
+                <!-- Route Actions: buttons for adding a location or clearing the entire route. -->
+                <div class="route-actions">
 
-        <button id="clearRoute" class="secondary-button" type="button">
-            Clear Route
-        </button>
-    </div>
+                    <!-- Adds the currently selected location to the route. -->
+                    <button id="addRoutePoint" class="primary-button" type="button">
+                        + Add Selected Location
+                    </button>
 
-    <div id="route" class="route-container">
-        <p class="empty-route">No route points added yet.</p>
-    </div>
+                    <!-- Removes all locations currently stored in the route. -->
+                    <button id="clearRoute" class="secondary-button" type="button">
+                        Clear Route
+                    </button>
 
-</section>
+                </div>
+
+                <!--
+                    Route Container:
+                    JavaScript inserts the route points into this element.
+                    It initially displays a message because the route is empty.
+                -->
+                <div id="route" class="route-container">
+                    <p class="empty-route">No route points added yet.</p>
+                </div>
+
+            </section>
 
 
 
-            <!-- Footer -->
+            <!-- Footer: displays application information and identifies the weather data provider. -->
             <footer class="sidebar-footer">
                 <p>
                     Mountain Forecast Pro
@@ -186,10 +223,10 @@
     </div>
 
 
-    <!-- JavaScript Libraries -->
+    <!-- JavaScript Libraries: loads Leaflet so app.js can create and control the interactive map. -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <!-- Application Logic -->
+    <!-- Application Logic: loads your own JavaScript after the page elements and libraries are available. -->
     <script src="app.js"></script>
 
 </body>

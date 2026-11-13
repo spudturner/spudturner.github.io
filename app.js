@@ -71,19 +71,6 @@ function loadLastLocation() {
         console.error("Leaflet did not load.");
         return;
     }
-// Restore the last selected location
-const savedLocation = loadLastLocation();
-
-if (savedLocation) {
-    selectLocation(savedLocation.lat, savedLocation.lon);
-
-    map.setView(
-        [savedLocation.lat, savedLocation.lon],
-        savedLocation.zoom || 10
-    );
-
-    console.log("Restored previous location:", savedLocation);
-}
     // ==============================
     // MAP
     // ==============================
@@ -647,7 +634,22 @@ if (savedLocation) {
         routePoints = [];
         renderRoute();
     });
+// ==============================
+// RESTORE LAST LOCATION
+// ==============================
 
+const savedLocation = loadLastLocation();
+
+if (savedLocation) {
+    selectLocation(savedLocation.lat, savedLocation.lon);
+
+    map.setView(
+        [savedLocation.lat, savedLocation.lon],
+        savedLocation.zoom || 10
+    );
+
+    console.log("Restored previous location:", savedLocation);
+}
     // ==============================
     // INITIALIZATION
     // ==============================

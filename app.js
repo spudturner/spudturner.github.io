@@ -8,15 +8,9 @@ WHAT IS THIS FILE?
 
 This is the main JavaScript file for Mountain Forecast Pro.
 
-JavaScript is a programming language that makes websites
-interactive. HTML creates the elements on a webpage, CSS
-controls their appearance, and JavaScript controls what
-those elements actually do.
-
-For example:
-    - HTML creates the map container.
-    - CSS determines how large the map appears.
-    - JavaScript loads the map and makes it respond to clicks.
+JavaScript makes websites interactive. HTML creates the
+elements, CSS controls their appearance, and JavaScript
+controls what those elements do.
 
 This file controls:
     1. The interactive map.
@@ -32,17 +26,8 @@ This file controls:
 */
 
 
-// DOMContentLoaded is an event. An event is something that
-// happens in the browser that JavaScript can respond to.
-//
-// DOM stands for Document Object Model. It is the browser's
-// internal representation of the webpage and its HTML.
-//
-// This event tells JavaScript to wait until the HTML has
-// finished loading before trying to interact with it.
-//
-// Without this, JavaScript might try to find buttons or map
-// containers that the browser has not created yet.
+// Wait until the HTML has finished loading before running
+// JavaScript that interacts with its elements.
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -50,29 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==================================================
     // 1. FINDING HTML ELEMENTS
     // ==================================================
-
-    /*
-    WHAT IS document.getElementById()?
-
-    Every HTML element can have an ID, which is a unique name
-    used to identify that element.
-
-    For example, in index.html:
-
-        <input id="lat">
-
-    JavaScript can find that input using:
-
-        document.getElementById("lat")
-
-    We store the elements in variables so we can use them
-    later without having to search for them repeatedly.
-
-    A variable is a named container that stores information.
-
-    The 'const' keyword creates a variable that cannot be
-    reassigned to a different value later.
-    */
 
     const latInput = document.getElementById("lat");
     const lonInput = document.getElementById("lon");
@@ -90,18 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const addRouteBtn = document.getElementById("addRoutePoint");
 
 
-    /*
-    Before doing anything else, check that the important
-    HTML elements actually exist.
-
-    An element that JavaScript cannot find will have a value
-    of null. Null means that there is no value or object there.
-
-    If a required element is missing, continuing could cause
-    errors throughout the program.
-
-    Instead, we display an error and stop the program.
-    */
+    // Check that the important HTML elements actually exist.
 
     if (
         !latInput ||
@@ -119,17 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /*
-    Leaflet is the JavaScript library used to create the map.
-
-    A library is a collection of prewritten code that
-    programmers can use instead of building everything
-    themselves.
-
-    The letter L is the name Leaflet uses for its functions.
-
-    If Leaflet failed to load, the map cannot be created.
-    */
+    // Check that Leaflet successfully loaded.
 
     if (typeof L === "undefined") {
         results.textContent =
@@ -146,23 +87,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // 2. APPLICATION VARIABLES
     // ==================================================
 
-    /*
-    These variables keep track of information while the
-    website is running.
-
-    'let' creates a variable whose value can change.
-
-    This is different from 'const', which cannot be reassigned.
-
-    For example:
-        let chart = null;
-
-    Later, we can replace null with an actual chart object.
-
-    An object is a JavaScript value that can contain multiple
-    related pieces of information.
-    */
-
     const LOCATION_STORAGE_KEY = "mountainForecastLastLocation";
 
     let map;
@@ -178,98 +102,23 @@ document.addEventListener("DOMContentLoaded", () => {
     let routeLine = null;
 
 
-    /*
-    Here is what these variables represent:
-
-    map:
-        The Leaflet map displayed on the website.
-
-    selectedMarker:
-        The marker showing the currently selected location.
-
-    selectedLocation:
-        The latitude and longitude currently selected.
-
-    chart:
-        The temperature chart.
-
-    forecastController:
-        Controls an active weather request so an older request
-        can be canceled if a new one starts.
-
-    routePoints:
-        An array containing all locations added to a route.
-
-    routeMarkers:
-        The map markers representing those route points.
-
-    routeLine:
-        The line connecting the route points.
-
-    An array is a list of values stored in a single variable.
-    We use arrays for the route because it can contain many
-    different locations.
-    */
-
-
 
     // ==================================================
     // 3. LOCAL STORAGE
     // ==================================================
 
     /*
-    WHAT IS localStorage?
-
-    localStorage is a feature built into web browsers.
-
-    It allows a website to save small amounts of information
-    directly in the user's browser.
-
-    Unlike ordinary JavaScript variables, information stored
-    in localStorage survives:
-        - Refreshing the webpage.
-        - Closing and reopening the browser.
-        - Restarting the computer.
-
-    The information stays on that particular browser and device.
-
-    It does NOT automatically transfer between devices.
-
-    LOCATION_STORAGE_KEY is the name we use to identify our
-    saved location in localStorage.
-    */
-
-
-    /*
     SAVE LAST LOCATION
 
     This function saves the selected latitude, longitude,
-    and map zoom level.
-
-    A function is a reusable block of code that performs
-    a particular task.
-
-    We pass latitude and longitude into this function.
-    These are called parameters.
-
-    Number() converts a value into a number.
-
-    JSON.stringify() converts a JavaScript object into text
-    so it can be stored in localStorage.
-
-    JSON stands for JavaScript Object Notation. It is a
-    common format for storing and transferring information.
+    and map zoom level in the browser.
     */
 
     function saveLastLocation(lat, lon) {
 
-        // We cannot save the map zoom if the map does not exist.
         if (!map) return;
 
         try {
-
-            // Create an object containing the information
-            // we want to remember.
 
             const location = {
                 lat: Number(lat),
@@ -277,7 +126,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 zoom: map.getZoom()
             };
 
-            // Store the object as text in the browser.
             localStorage.setItem(
                 LOCATION_STORAGE_KEY,
                 JSON.stringify(location)
@@ -285,7 +133,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         } catch (error) {
 
-            // If the browser blocks storage, report the problem.
             console.warn("Unable to save location:", error);
         }
     }
@@ -294,17 +141,8 @@ document.addEventListener("DOMContentLoaded", () => {
     /*
     LOAD LAST LOCATION
 
-    This function retrieves the saved location.
-
-    localStorage.getItem() retrieves the information using
-    the key we created above.
-
-    JSON.parse() converts the stored text back into a
-    JavaScript object.
-
-    We validate the coordinates before using them. Validation
-    means checking that information is acceptable and within
-    the expected limits.
+    Retrieve the previously saved coordinates and validate
+    them before using them.
     */
 
     function loadLastLocation() {
@@ -315,15 +153,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 LOCATION_STORAGE_KEY
             );
 
-            // If nothing was saved, return null.
             if (!saved) {
                 return null;
             }
 
-            // Convert the stored text back into an object.
             const location = JSON.parse(saved);
 
-            // Make sure the saved information is valid.
             if (
                 !location ||
                 !Number.isFinite(location.lat) ||
@@ -336,7 +171,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 return null;
             }
 
-            // Make sure the zoom level is also reasonable.
             const zoom = Number.isFinite(location.zoom)
                 ? Math.max(1, Math.min(location.zoom, 19))
                 : 10;
@@ -359,13 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
     /*
     SAVE CURRENT ZOOM
 
-    The user can zoom in and out of the map.
-
-    We want the website to remember the zoom level as well
-    as the selected coordinates.
-
-    This function saves the current location again whenever
-    the map's zoom level changes.
+    Save the current location whenever the map's zoom changes.
     */
 
     function saveCurrentZoom() {
@@ -383,28 +211,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==================================================
     // 4. MAP INITIALIZATION
     // ==================================================
-
-    /*
-    We now create the actual map.
-
-    L.map("map") tells Leaflet to put the map inside the
-    HTML element whose ID is "map".
-
-    setView() determines where the map initially appears.
-
-    The first value is an array:
-        [latitude, longitude]
-
-    The second value is the zoom level.
-
-    A larger zoom number means a closer view.
-
-    We use a default location in Denver in case the user
-    has never selected a location before.
-
-    The try/catch block prevents a map initialization
-    problem from crashing the rest of the website.
-    */
 
     try {
 
@@ -428,27 +234,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==================================================
     // 5. MAP LAYERS
     // ==================================================
-
-    /*
-    A map layer is a particular map display that can be
-    placed on top of the Leaflet map.
-
-    We provide two choices:
-
-        1. OpenTopoMap:
-           A topographic map showing terrain features,
-           elevation information, and landforms.
-
-        2. OpenStreetMap:
-           A standard street map.
-
-    tileLayer() loads the map as many small square images
-    called tiles.
-
-    Leaflet automatically combines those tiles to create
-    the complete map.
-    */
-
 
     // Topographic map layer.
     const topoLayer = L.tileLayer(
@@ -478,11 +263,7 @@ document.addEventListener("DOMContentLoaded", () => {
     topoLayer.addTo(map);
 
 
-    /*
-    This creates the small menu in the upper corner of the
-    map that lets the user switch between map layers.
-    */
-
+    // Create the map layer selection menu.
     L.control.layers(
         {
             "Topographic": topoLayer,
@@ -491,17 +272,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ).addTo(map);
 
 
-    /*
-    These event listeners watch for errors while downloading
-    map tiles.
-
-    An event listener is code that waits for something to
-    happen and then responds to it.
-
-    If a map tile fails to load, we display a warning in
-    the browser's developer console.
-    */
-
+    // Watch for errors while downloading map tiles.
     topoLayer.on("tileerror", () => {
         console.warn(
             "A topographic map tile failed to load. Try Street Map."
@@ -520,22 +291,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // 6. MAP RESIZING
     // ==================================================
 
-    /*
-    Sometimes a map is displayed before its surrounding
-    webpage has finished adjusting its size.
-
-    This can cause the map to appear gray, incomplete,
-    or incorrectly positioned.
-
-    invalidateSize() tells Leaflet to recalculate the
-    dimensions of the map.
-
-    We run this when:
-        - The browser finishes loading.
-        - The browser window changes size.
-        - The map container changes size.
-    */
-
     function resizeMap() {
 
         if (map) {
@@ -548,14 +303,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("resize", resizeMap);
 
 
-    /*
-    ResizeObserver watches an HTML element and detects
-    when its dimensions change.
-
-    This is useful when the sidebar opens, closes, or changes
-    size without the browser window itself changing size.
-    */
-
+    // Watch for changes to the map container's dimensions.
     if (typeof ResizeObserver !== "undefined") {
 
         const mapObserver = new ResizeObserver(resizeMap);
@@ -564,9 +312,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    // Wait until Leaflet finishes initializing the map.
-    // Then resize it once more after a short delay.
-
+    // Resize the map after Leaflet finishes initializing.
     map.whenReady(() => {
         setTimeout(resizeMap, 250);
     });
@@ -580,28 +326,25 @@ document.addEventListener("DOMContentLoaded", () => {
     /*
     GET COORDINATES
 
-    This function reads the latitude and longitude inputs.
+    Number() converts the input text into a number.
 
-    parseFloat() converts text into a decimal number.
+    Unlike parseFloat(), Number() does not accept a valid
+    number followed by extra invalid characters.
 
     For example:
-        "47.505000" becomes 47.505
-
-    We also check that the coordinates are geographically
-    possible.
-
-    Latitude:
-        -90 = South Pole
-         90 = North Pole
-
-    Longitude:
-       -180 to 180 = the full east/west range of Earth.
+        Number("47.5") = 47.5
+        Number("47abc") = NaN
     */
 
     function getCoordinates() {
 
-        const lat = Number.parseFloat(latInput.value);
-        const lon = Number.parseFloat(lonInput.value);
+        const lat = latInput.value.trim() === ""
+            ? NaN
+            : Number(latInput.value);
+
+        const lon = lonInput.value.trim() === ""
+            ? NaN
+            : Number(lonInput.value);
 
         if (
             !Number.isFinite(lat) ||
@@ -623,30 +366,12 @@ document.addEventListener("DOMContentLoaded", () => {
     /*
     SELECT LOCATION
 
-    This is one of the most important functions in the program.
-
-    It updates the website whenever the user chooses a location.
-
-    It:
-        1. Saves the selected coordinates in a variable.
-        2. Updates the latitude and longitude inputs.
-        3. Removes the previous map marker.
-        4. Creates a new map marker.
-        5. Optionally moves the map.
-        6. Saves the location in localStorage.
-        7. Updates the results panel.
-
-    A marker is the pin or symbol placed on the map.
-
-    The moveMap parameter determines whether the map should
-    move to the selected coordinates.
-
-    Its default value is false.
+    Update the selected coordinates, marker, input boxes,
+    map position, and saved location.
     */
 
     function selectLocation(lat, lon, moveMap = false) {
 
-        // Check that the coordinates are valid.
         if (
             !Number.isFinite(lat) ||
             !Number.isFinite(lon) ||
@@ -659,26 +384,25 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        // Remember the currently selected coordinates.
         selectedLocation = { lat, lon };
 
 
-        // Update the input boxes on the webpage.
+        // Update the input boxes.
         latInput.value = lat.toFixed(6);
         lonInput.value = lon.toFixed(6);
 
 
-        // Remove the previous marker if one exists.
+        // Remove the previous marker.
         if (selectedMarker) {
             map.removeLayer(selectedMarker);
         }
 
 
-        // Create a marker at the new coordinates.
+        // Create a new marker.
         selectedMarker = L.marker([lat, lon]).addTo(map);
 
 
-        // Create a popup that appears when the marker is clicked.
+        // Add a popup to the marker.
         selectedMarker.bindPopup(`
             <strong>Selected Location</strong><br>
             Latitude: ${lat.toFixed(6)}<br>
@@ -686,17 +410,17 @@ document.addEventListener("DOMContentLoaded", () => {
         `);
 
 
-        // Move the map only if moveMap is true.
+        // Move the map if requested.
         if (moveMap) {
             map.setView([lat, lon], 12);
         }
 
 
-        // Save the selected coordinates and current zoom.
+        // Save the selected location.
         saveLastLocation(lat, lon);
 
 
-        // Display information about the selected location.
+        // Update the results panel.
         results.innerHTML = `
             <div class="empty-state">
                 <span class="empty-icon">⛰</span>
@@ -713,20 +437,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /*
-    MAP CLICK EVENT
-
-    Whenever the user clicks the map, Leaflet provides the
-    coordinates of the clicked location.
-
-    event.latlng contains the latitude and longitude.
-
-    We pass those coordinates into selectLocation().
-
-    This is how clicking the map updates the input boxes,
-    marker, results panel, and saved location.
-    */
-
+    // Select a location when the map is clicked.
     map.on("click", (event) => {
 
         selectLocation(
@@ -738,18 +449,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 
-    /*
-    READ AND SELECT INPUTS
-
-    This function is used when the user manually enters
-    coordinates into the latitude and longitude input boxes.
-
-    It reads the values, checks them, and selects the location.
-
-    The true value tells selectLocation() to move the map
-    to the entered coordinates.
-    */
-
+    // Read coordinates from the input boxes and select them.
     function readAndSelectInputs() {
 
         const { lat, lon } = getCoordinates();
@@ -766,21 +466,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==================================================
 
     /*
-    Open-Meteo returns weather conditions as numbers called
-    WMO weather codes.
-
-    These codes are standardized numbers representing
-    different weather conditions.
-
-    For example:
-        0 = Clear sky
-        3 = Overcast
-        61 = Light rain
-        71 = Light snow
-        95 = Thunderstorm
-
-    This function translates those numbers into words
-    that are easier for people to understand.
+    Open-Meteo returns weather conditions as WMO codes.
+    This function translates those codes into descriptions.
     */
 
     function weatherDescription(code) {
@@ -830,31 +517,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     This is the main forecast function.
 
-    It is called when the user clicks the Generate Forecast
-    button or when the GPS button retrieves their location.
-
     It:
-        1. Reads the selected coordinates.
-        2. Sends requests to Open-Meteo.
-        3. Retrieves current weather conditions.
-        4. Retrieves hourly forecast information.
-        5. Retrieves ground elevation.
-        6. Calculates estimated temperatures at higher elevations.
-        7. Displays the information.
-        8. Creates the temperature chart.
-
-    The word 'async' means asynchronous.
-
-    An asynchronous function can wait for something that
-    takes time, such as downloading information from an API,
-    without freezing the entire webpage.
-
-    An API (Application Programming Interface) is a way for
-    one program to request information or services from
-    another program.
-
-    In this case, our website asks Open-Meteo for weather
-    and elevation information.
+        1. Reads and validates coordinates.
+        2. Requests weather information.
+        3. Requests elevation information.
+        4. Processes the returned data.
+        5. Calculates estimated temperatures.
+        6. Displays the results.
+        7. Creates the temperature chart.
     */
 
     async function run() {
@@ -862,7 +532,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let coordinates;
 
 
-        // First, read and validate the coordinates.
+        // Read and validate the coordinates.
         try {
 
             coordinates = readAndSelectInputs();
@@ -875,30 +545,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        /*
-        ABORT CONTROLLER
-
-        A fetch request is a request to retrieve information
-        from another server.
-
-        Sometimes a user clicks Generate Forecast multiple
-        times before the first request finishes.
-
-        We do not want an older request to overwrite the
-        results of a newer request.
-
-        AbortController allows us to cancel an active request.
-
-        If an earlier forecast is still running, cancel it
-        before starting another one.
-        */
-
+        // Cancel an older forecast request if one is running.
         if (forecastController) {
             forecastController.abort();
         }
 
 
-        // Create a controller for this new forecast request.
+        // Create a controller for this new request.
         const controller = new AbortController();
 
         forecastController = controller;
@@ -906,7 +559,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const signal = controller.signal;
 
 
-        // Disable the button while the forecast is loading.
+        // Disable the forecast button while loading.
         forecastBtn.disabled = true;
 
         forecastBtn.textContent = "Loading Forecast...";
@@ -924,36 +577,27 @@ document.addEventListener("DOMContentLoaded", () => {
         // ==================================================
 
         /*
-        This is the address of the Open-Meteo weather API.
+        IMPORTANT FIX:
 
-        URL means Uniform Resource Locator. It is the address
-        used to locate a resource on the internet.
+        The weather URL must be a URL object, not a plain
+        string, because we assign URLSearchParams to its
+        search property.
 
-        URLSearchParams adds the information we want to request.
-
-        We ask for:
-            - Current temperature.
-            - Current humidity.
-            - Current wind speed.
-            - Current weather code.
-            - Hourly temperature.
-            - Hourly precipitation probability.
-            - Hourly wind speed.
-            - Hourly weather code.
-
-        We also request:
-            - Two days of forecast data.
-            - The location's local time zone.
-            - Fahrenheit temperatures.
-            - Wind speeds in miles per hour.
+        The previous code attempted to use undefined
+        variables named la and lo. This version uses the
+        actual coordinates: lat and lon.
         */
 
-        const weatherURL = `https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&hourly=temperature_2m,precipitation_probability,wind_speed_10m,weather_code&timezone=auto`;
+        const weatherURL = new URL(
+            "https://api.open-meteo.com/v1/forecast"
+        );
 
+
+        // Add the requested weather parameters.
         weatherURL.search = new URLSearchParams({
 
-            latitude: lat,
-            longitude: lon,
+            latitude: String(lat),
+            longitude: String(lon),
 
             current:
                 "temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code",
@@ -969,7 +613,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             wind_speed_unit: "mph"
 
-        });
+        }).toString();
 
 
 
@@ -977,27 +621,16 @@ document.addEventListener("DOMContentLoaded", () => {
         // 9B. ELEVATION API ADDRESS
         // ==================================================
 
-        /*
-        This is a separate API request for the elevation
-        of the selected coordinates.
-
-        Elevation is the height of a location above sea level.
-
-        The API returns elevation in meters.
-
-        Later, we convert that value into feet.
-        */
-
         const elevationURL = new URL(
             "https://api.open-meteo.com/v1/elevation"
         );
 
         elevationURL.search = new URLSearchParams({
 
-            latitude: lat,
-            longitude: lon
+            latitude: String(lat),
+            longitude: String(lon)
 
-        });
+        }).toString();
 
 
 
@@ -1006,18 +639,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // ==================================================
 
         /*
-        fetch() sends a request to an internet address.
-
-        We use Promise.all() to send both API requests at
-        approximately the same time.
-
-        A Promise represents an operation that may finish
-        in the future.
-
-        Promise.all() waits until both requests have finished.
-
-        This is faster than waiting for the weather request
-        to finish before starting the elevation request.
+        Promise.all() allows both API requests to run
+        at approximately the same time.
         */
 
         try {
@@ -1032,7 +655,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 ]);
 
 
-            // Check whether either server reported an error.
+            // Check whether either server returned an error.
             if (!weatherResponse.ok) {
 
                 throw new Error(
@@ -1048,14 +671,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
 
-            /*
-            Convert the responses from JSON into JavaScript
-            objects that we can work with.
-
-            We can now access information using properties
-            such as weather.current.temperature_2m.
-            */
-
+            // Convert both responses from JSON into JavaScript objects.
             const [weather, elevationData] = await Promise.all([
 
                 weatherResponse.json(),
@@ -1069,19 +685,6 @@ document.addEventListener("DOMContentLoaded", () => {
             // ==================================================
             // 9D. CHECKING THE API INFORMATION
             // ==================================================
-
-            /*
-            Never assume an internet service will always return
-            exactly what we expect.
-
-            We check that the important information exists
-            before trying to use it.
-
-            Array.isArray() checks whether something is a list.
-
-            Number.isFinite() checks whether something is
-            a valid, usable number.
-            */
 
             if (
                 !weather.current ||
@@ -1113,19 +716,6 @@ document.addEventListener("DOMContentLoaded", () => {
             // 9E. CURRENT WEATHER CONDITIONS
             // ==================================================
 
-            /*
-            We retrieve the current conditions from the
-            weather response.
-
-            The API returns temperature in Fahrenheit because
-            we specifically requested Fahrenheit above.
-
-            Elevation is returned in meters, so we convert
-            it into feet.
-
-            There are approximately 3.28084 feet in one meter.
-            */
-
             const current = weather.current;
 
             const temperature = current.temperature_2m;
@@ -1134,6 +724,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const wind = current.wind_speed_10m;
 
+            // Convert elevation from meters into feet.
             const groundElevation =
                 elevationData.elevation[0] * 3.28084;
 
@@ -1142,7 +733,7 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
-            // Make sure the current conditions are valid.
+            // Check that the current conditions are valid.
             if (
                 !Number.isFinite(temperature) ||
                 !Number.isFinite(humidity) ||
@@ -1160,22 +751,10 @@ document.addEventListener("DOMContentLoaded", () => {
             // 10. HOURLY FORECAST
             // ==================================================
 
-            /*
-            The hourly forecast contains a list of times and
-            corresponding weather information.
-
-            We want to display the next six hours rather than
-            displaying the entire two-day forecast.
-
-            findIndex() searches an array and returns the
-            position of the first matching item.
-
-            We use it to find the first forecast hour that
-            is at or after the current time.
-            */
-
             const hourly = weather.hourly;
 
+
+            // Find the first forecast hour at or after the current time.
             let firstHour = hourly.time.findIndex(
                 time => time >= current.time
             );
@@ -1187,7 +766,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
 
-            // Build the HTML table for the hourly forecast.
+            // Start building the hourly forecast table.
             let hourlyHTML = `
 
                 <h3>Upcoming Hours</h3>
@@ -1204,14 +783,7 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
 
 
-            /*
-            A for loop repeats a section of code.
-
-            Here, we start at the first upcoming hour and
-            continue until we have displayed six hours
-            or reached the end of the available forecast.
-            */
-
+            // Display the next six forecast hours.
             for (
                 let i = firstHour;
                 i < Math.min(firstHour + 6, hourly.time.length);
@@ -1230,7 +802,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
-                // Add another row to the HTML table.
+                // Add a row to the hourly forecast table.
                 hourlyHTML += `
 
                     <tr>
@@ -1257,7 +829,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
 
-            // Close the HTML table.
+            // Close the table.
             hourlyHTML += "</table>";
 
 
@@ -1267,33 +839,20 @@ document.addEventListener("DOMContentLoaded", () => {
             // ==================================================
 
             /*
-            Temperature generally decreases as elevation
-            increases.
+            Temperature generally decreases as elevation increases.
 
-            We use a simplified temperature lapse rate of
-            3.6°F per 1,000 feet of elevation gain.
+            This estimate uses a lapse rate of 3.6°F per
+            1,000 feet of elevation gain.
 
-            A lapse rate describes how temperature changes
-            as altitude increases or decreases.
-
-            IMPORTANT:
-
-            This is an estimate, not an actual weather
-            forecast for a mountain summit.
-
-            Real mountain temperatures depend on many
-            additional factors, including wind, sunlight,
-            clouds, humidity, and weather systems.
+            This is NOT an actual mountain summit forecast.
             */
 
-
-            // These arrays will hold information for the chart.
             const elevationLabels = [];
 
             const elevationTemperatures = [];
 
 
-            // Start building the elevation results table.
+            // Start building the elevation table.
             let elevationHTML = `
 
                 <h3>Estimated Temperature by Elevation</h3>
@@ -1308,28 +867,13 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
 
 
-            /*
-            This loop calculates estimated temperatures
-            every 1,000 feet, from zero to 12,000 feet.
-
-            For example:
-
-                Ground temperature = 60°F
-
-                At 1,000 feet:
-                    60 - 3.6 = 56.4°F
-
-                At 2,000 feet:
-                    60 - 7.2 = 52.8°F
-            */
-
+            // Calculate temperatures every 1,000 feet.
             for (let gain = 0; gain <= 12000; gain += 1000) {
 
                 const estimatedTemp =
                     temperature - (gain / 1000 * 3.6);
 
 
-                // Create a readable elevation label.
                 const label = gain === 0
                     ? "0"
                     : `+${gain.toLocaleString()}`;
@@ -1343,7 +887,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
-                // Add the information to the results table.
+                // Add the information to the table.
                 elevationHTML += `
 
                     <tr>
@@ -1366,18 +910,6 @@ document.addEventListener("DOMContentLoaded", () => {
             // ==================================================
             // 12. DISPLAY WEATHER RESULTS
             // ==================================================
-
-            /*
-            innerHTML changes the HTML inside an element.
-
-            We use it to display the weather information
-            that we retrieved and calculated above.
-
-            The ${} sections insert JavaScript values into
-            the HTML.
-
-            This is called template literal interpolation.
-            */
 
             results.innerHTML = `
 
@@ -1421,18 +953,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // 13. CREATE THE TEMPERATURE CHART
             // ==================================================
 
-            /*
-            Chart.js is a JavaScript library that creates charts.
-
-            We check whether it loaded before trying to use it.
-
-            If Chart.js is unavailable, we still display the
-            weather information and elevation table.
-
-            The chart is an additional visual representation
-            of the elevation estimates.
-            */
-
+            // Check whether Chart.js loaded successfully.
             if (typeof Chart === "undefined" || !chartCanvas) {
 
                 console.warn(
@@ -1443,8 +964,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 try {
 
-                    // Remove the previous chart before creating
-                    // a new one. Otherwise charts can overlap.
+                    // Destroy the previous chart before creating another.
                     if (chart) {
                         chart.destroy();
                     }
@@ -1457,15 +977,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         data: {
 
-                            // The labels appear along the bottom.
                             labels: elevationLabels,
 
                             datasets: [{
 
                                 label: "Estimated Temperature (°F)",
 
-                                // These are the temperatures
-                                // calculated in the elevation loop.
                                 data: elevationTemperatures,
 
                                 borderColor: "#73b9a0",
@@ -1507,8 +1024,6 @@ document.addEventListener("DOMContentLoaded", () => {
                             },
 
 
-                            // Configure the horizontal and
-                            // vertical axes of the chart.
                             scales: {
 
                                 x: {
@@ -1577,23 +1092,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
         } catch (error) {
 
-            /*
-            If something goes wrong while retrieving or
-            processing weather information, this section
-            catches the error.
-
-            A catch block prevents an error from stopping
-            the entire webpage.
-            */
-
-            // Canceled requests are expected and do not need
-            // to display an error to the user.
+            // Canceled requests do not need to display an error.
             if (error.name === "AbortError") {
                 return;
             }
 
 
             console.error("Forecast error:", error);
+
+
+            // A TypeError from fetch commonly means the browser
+            // could not complete the network request.
+            const userMessage = error instanceof TypeError
+                ? "The browser could not reach the weather service. Check your internet connection, browser extensions, or network restrictions."
+                : error.message;
 
 
             // Display an understandable error message.
@@ -1603,7 +1115,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     <strong>Forecast unavailable</strong>
 
-                    <p>${error.message}</p>
+                    <p>${userMessage}</p>
 
                     <p>Check your connection and try again.</p>
 
@@ -1613,16 +1125,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         } finally {
 
-            /*
-            The finally block runs whether the forecast
-            succeeded or failed.
-
-            We use it to restore the Generate Forecast button.
-
-            We only change the button if this is still the
-            most recent request.
-            */
-
+            // Restore the button if this is still the newest request.
             if (forecastController === controller) {
 
                 forecastController = null;
@@ -1635,7 +1138,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    // When the user clicks Generate Forecast, run the function.
+    // Run the forecast when the user clicks the button.
     forecastBtn.addEventListener("click", run);
 
 
@@ -1644,28 +1147,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // 14. GPS / CURRENT LOCATION
     // ==================================================
 
-    /*
-    This section allows the user to use their device's GPS.
-
-    GPS stands for Global Positioning System.
-
-    The browser asks the device for its current geographic
-    coordinates.
-
-    The browser must have permission to access this information.
-
-    Most browsers also require the website to use HTTPS
-    (a secure connection) before allowing geolocation.
-
-    getCurrentPosition() requests the current coordinates.
-
-    It can take several seconds, so we provide success and
-    error functions to handle both possible outcomes.
-    */
-
     locateBtn.addEventListener("click", () => {
 
-        // Check whether the browser supports GPS access.
+        // Check whether the browser supports geolocation.
         if (!navigator.geolocation) {
 
             alert(
@@ -1694,13 +1178,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     position.coords.longitude.toFixed(6);
 
 
-                /*
-                Run the normal forecast function.
-
-                Because run() reads the input boxes, it will
-                automatically use the GPS coordinates.
-                */
-
+                // Run the normal forecast function using GPS coordinates.
                 try {
 
                     await run();
@@ -1749,40 +1227,14 @@ document.addEventListener("DOMContentLoaded", () => {
     The route planner lets the user select multiple locations
     and connect them with a line.
 
-    A route point is one geographic location in the route.
-
-    For example:
-
-        Point 1: Trailhead
-        Point 2: Campsite
-        Point 3: Summit
-
-    The route is stored in an array called routePoints.
-
-    Each route point is an object containing latitude and
-    longitude.
-
-    IMPORTANT:
-
-    The line drawn between points is straight.
-
-    It does not follow roads, hiking trails, or terrain.
+    The line drawn between points is straight. It does not
+    follow roads, hiking trails, or terrain.
     */
 
 
     // ==================================================
     // 15A. DRAW THE ROUTE
     // ==================================================
-
-    /*
-    renderRoute() redraws the route whenever a point is
-    added or removed.
-
-    It first removes the old line and markers.
-
-    Then it draws the updated route using the current
-    information in the routePoints array.
-    */
 
     function renderRoute() {
 
@@ -1806,7 +1258,7 @@ document.addEventListener("DOMContentLoaded", () => {
         routeMarkers = [];
 
 
-        // If there are no points, display an empty message.
+        // Display an empty message if there are no points.
         if (routePoints.length === 0) {
 
             if (routeContainer) {
@@ -1824,15 +1276,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        /*
-        If there are at least two points, draw a line
-        connecting them.
-
-        L.polyline() creates a line from a list of coordinates.
-
-        The line is added to the map using addTo(map).
-        */
-
+        // Draw a line if there are at least two route points.
         if (routePoints.length >= 2) {
 
             routeLine = L.polyline(
@@ -1854,17 +1298,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        /*
-        Create a marker for every route point.
-
-        forEach() repeats a function for every item in an array.
-
-        index represents the position of the point in the array.
-
-        The first point has index 0, the second has index 1,
-        and so on.
-        */
-
+        // Create a marker for every route point.
         routePoints.forEach((point, index) => {
 
             const routeMarker = L.marker([
@@ -1888,7 +1322,7 @@ document.addEventListener("DOMContentLoaded", () => {
             `);
 
 
-            // Save the marker so we can remove it later.
+            // Save the marker so it can be removed later.
             routeMarkers.push(routeMarker);
         });
 
@@ -1897,16 +1331,6 @@ document.addEventListener("DOMContentLoaded", () => {
         // ==================================================
         // 15B. DISPLAY THE ROUTE LIST
         // ==================================================
-
-        /*
-        We also display each route point in the sidebar.
-
-        map() takes every item in an array and creates
-        something new from it.
-
-        join("") combines all the resulting HTML into one
-        string that can be placed inside the route container.
-        */
 
         if (routeContainer) {
 
@@ -1954,22 +1378,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // 15C. ADD A ROUTE POINT
     // ==================================================
 
-    /*
-    When the user clicks Add Selected Location:
-
-        1. Read the latitude and longitude inputs.
-        2. Check that they contain valid coordinates.
-        3. Add the coordinates to the routePoints array.
-        4. Redraw the route.
-        5. Update the selected location.
-
-    We check that the route button exists before adding
-    an event listener.
-
-    This means the map can still work even if the route
-    planner button is missing from the HTML.
-    */
-
     if (addRouteBtn) {
 
         addRouteBtn.addEventListener("click", () => {
@@ -2003,20 +1411,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // 15D. REMOVE A ROUTE POINT
     // ==================================================
 
-    /*
-    Each route point has its own X button.
-
-    Instead of creating a separate event listener for every
-    X button, we put one event listener on the route container.
-
-    This is called event delegation.
-
-    The event listener checks whether the user clicked one
-    of the remove buttons.
-
-    If they did, we find its index and remove that point.
-    */
-
     if (routeContainer) {
 
         routeContainer.addEventListener("click", event => {
@@ -2026,7 +1420,7 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
-            // If the click was not on a remove button, do nothing.
+            // Ignore clicks that were not on a remove button.
             if (!removeButton) return;
 
 
@@ -2046,8 +1440,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
 
-            // splice() removes items from an array.
-            // Here, we remove exactly one route point.
+            // Remove exactly one route point.
             routePoints.splice(index, 1);
 
 
@@ -2061,15 +1454,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==================================================
     // 15E. CLEAR THE ENTIRE ROUTE
     // ==================================================
-
-    /*
-    This button removes every route point.
-
-    Setting an array's length to zero clears all of its items.
-
-    We then call renderRoute() to remove the markers and
-    line from the map.
-    */
 
     if (clearRouteBtn) {
 
@@ -2088,24 +1472,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==================================================
 
     /*
-    This section is intentionally near the bottom.
+    This section is near the bottom because the map and
+    selectLocation() function must already exist.
 
-    The map and selectLocation() function must already exist
-    before we try to restore anything.
-
-    Earlier in the file, we created loadLastLocation().
-
-    Now we use that function to retrieve the saved coordinates.
-
-    If a saved location exists:
-
-        1. Move the map to those coordinates.
-        2. Restore the previous zoom level.
-        3. Recreate the selected marker.
-        4. Update the latitude and longitude input boxes.
-
-    If no location has ever been saved, the map stays at
-    the default location set during initialization.
+    If a saved location exists, restore its coordinates,
+    zoom level, and marker.
     */
 
     const savedLocation = loadLastLocation();
@@ -2114,7 +1485,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
 
-            // Restore the map position and zoom first.
+            // Restore the map position and zoom.
             map.setView(
 
                 [savedLocation.lat, savedLocation.lon],
@@ -2153,16 +1524,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==================================================
     // 17. FINISH INITIALIZATION
     // ==================================================
-
-    /*
-    This message appears in the browser's developer console.
-
-    The developer console is a browser tool used to inspect
-    messages, warnings, and errors generated by JavaScript.
-
-    If this message appears, the main JavaScript initialization
-    completed successfully.
-    */
 
     console.log("Mountain Forecast Pro initialized.");
 

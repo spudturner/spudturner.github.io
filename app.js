@@ -948,9 +948,7 @@ document.addEventListener("DOMContentLoaded", () => {
             - Wind speeds in miles per hour.
         */
 
-        const weatherURL = new URL(
-            "https://api.open-meteo.com/v1/forecast"
-        );
+        const weatherURL = `https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&hourly=temperature_2m,precipitation_probability,wind_speed_10m,weather_code&timezone=auto`;
 
         weatherURL.search = new URLSearchParams({
 

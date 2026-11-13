@@ -1,11 +1,16 @@
+
 /* ==============================
    GLOBAL STYLES
 ============================== */
 
+/* Applies border-box sizing to every element.
+   This makes padding and borders count toward an element's total width and height. */
 * {
     box-sizing: border-box;
 }
 
+/* Defines reusable color variables for the entire website.
+   Using variables makes it easier to change the theme without editing every selector. */
 :root {
     --background: #101820;
     --panel: #192630;
@@ -17,6 +22,7 @@
     --accent-hover: #8bd1b5;
 }
 
+/* Sets the default appearance for the entire page. */
 body {
     margin: 0;
     font-family: Arial, Helvetica, sans-serif;
@@ -24,6 +30,7 @@ body {
     color: var(--text);
 }
 
+/* Makes buttons and inputs inherit the same font as the rest of the page. */
 button,
 input {
     font: inherit;
@@ -34,6 +41,8 @@ input {
    MAIN LAYOUT
 ============================== */
 
+/* Main wrapper containing both the map and sidebar.
+   Flexbox places the two sections beside each other on larger screens. */
 .app-container {
     display: flex;
     width: 100%;
@@ -41,6 +50,8 @@ input {
     overflow: hidden;
 }
 
+/* The map container expands to fill the available horizontal space.
+   Position relative allows the branding overlay to be positioned inside it. */
 .map-container {
     position: relative;
     flex: 1;
@@ -48,6 +59,8 @@ input {
     min-height: 0;
 }
 
+/* Leaflet displays the interactive map inside this element.
+   The minimum height prevents the map from collapsing on smaller screens. */
 #map {
     width: 100%;
     height: 100%;
@@ -55,6 +68,7 @@ input {
     background: #263b42;
 }
 
+/* Changes the mouse cursor to a crosshair when hovering over the map. */
 .leaflet-container {
     cursor: crosshair;
 }
@@ -64,6 +78,8 @@ input {
    MAP BRAND OVERLAY
 ============================== */
 
+/* Positions the application branding over the upper-left corner of the map.
+   Pointer-events none allows clicks to pass through the overlay to the map. */
 .map-overlay {
     position: absolute;
     z-index: 500;
@@ -72,6 +88,7 @@ input {
     pointer-events: none;
 }
 
+/* Styles the box containing the application name and subtitle. */
 .map-brand {
     display: flex;
     align-items: center;
@@ -84,16 +101,19 @@ input {
     box-shadow: 0 5px 20px rgba(0,0,0,0.25);
 }
 
+/* Styles the decorative mountain symbol. */
 .brand-icon {
     color: var(--accent);
     font-size: 27px;
 }
 
+/* Makes the application name appear on its own line. */
 .map-brand strong {
     display: block;
     font-size: 15px;
 }
 
+/* Places the subtitle below the application name. */
 .map-brand small {
     display: block;
     margin-top: 4px;
@@ -106,6 +126,7 @@ input {
    SIDEBAR
 ============================== */
 
+/* Controls the size, spacing, scrolling, and appearance of the sidebar. */
 #sidebar {
     width: 410px;
     min-width: 350px;
@@ -116,10 +137,12 @@ input {
     border-left: 1px solid var(--border);
 }
 
+/* Adds spacing below the sidebar's introductory header. */
 .sidebar-header {
     margin-bottom: 25px;
 }
 
+/* Styles the small uppercase label above the main heading. */
 .section-label {
     color: var(--accent);
     font-size: 10px;
@@ -127,12 +150,14 @@ input {
     letter-spacing: 2px;
 }
 
+/* Controls the main sidebar heading. */
 .sidebar-header h1 {
     margin: 9px 0;
     font-size: 25px;
     line-height: 1.2;
 }
 
+/* Styles the descriptive text below the sidebar heading. */
 .sidebar-header p {
     color: var(--muted);
     font-size: 13px;
@@ -144,6 +169,8 @@ input {
    PANELS
 ============================== */
 
+/* Shared appearance for each major section in the sidebar.
+   The location, results, chart, and route planner all use this class. */
 .panel {
     margin-bottom: 18px;
     padding: 18px;
@@ -152,6 +179,7 @@ input {
     border-radius: 12px;
 }
 
+/* Arranges each panel's heading and any optional indicator horizontally. */
 .panel-heading {
     display: flex;
     align-items: center;
@@ -159,22 +187,26 @@ input {
     margin-bottom: 17px;
 }
 
+/* Styles the headings inside each panel. */
 .panel-heading h2 {
     margin: 0;
     font-size: 15px;
     font-weight: 600;
 }
 
+/* Styles the Ready indicator in the location panel. */
 .status-indicator {
     color: var(--accent);
     font-size: 11px;
 }
 
+/* Styles the temperature unit displayed beside the chart heading. */
 .chart-unit {
     color: var(--muted);
     font-size: 12px;
 }
 
+/* Styles descriptive text inside panels, such as the route planner instructions. */
 .panel-description {
     color: var(--muted);
     font-size: 12px;
@@ -186,17 +218,20 @@ input {
    INPUTS
 ============================== */
 
+/* Places the latitude and longitude inputs next to each other. */
 .coordinate-inputs {
     display: flex;
     gap: 12px;
     margin-bottom: 15px;
 }
 
+/* Allows each input group to take up an equal amount of available space. */
 .input-group {
     flex: 1;
     min-width: 0;
 }
 
+/* Places the input labels above their corresponding fields. */
 .input-group label {
     display: block;
     margin-bottom: 7px;
@@ -204,6 +239,7 @@ input {
     font-size: 11px;
 }
 
+/* Styles the actual coordinate input fields. */
 .input-group input {
     width: 100%;
     padding: 11px;
@@ -214,10 +250,12 @@ input {
     outline: none;
 }
 
+/* Highlights an input field when the user clicks or tabs into it. */
 .input-group input:focus {
     border-color: var(--accent);
 }
 
+/* Styles the small instruction below the location buttons. */
 .input-hint {
     margin-bottom: 0;
     color: var(--muted);
@@ -230,6 +268,7 @@ input {
    BUTTONS
 ============================== */
 
+/* Shared styling applied to all buttons throughout the application. */
 button {
     width: 100%;
     padding: 12px;
@@ -239,6 +278,7 @@ button {
     transition: 0.2s ease;
 }
 
+/* Primary buttons use the accent color to make their actions stand out. */
 .primary-button {
     margin-bottom: 10px;
     color: #10221d;
@@ -246,16 +286,19 @@ button {
     font-weight: bold;
 }
 
+/* Changes the primary button's background when the mouse hovers over it. */
 .primary-button:hover {
     background: var(--accent-hover);
 }
 
+/* Secondary buttons use a darker background to distinguish less prominent actions. */
 .secondary-button {
     color: var(--text);
     background: var(--panel-light);
     border: 1px solid var(--border);
 }
 
+/* Lightens the secondary button when the mouse hovers over it. */
 .secondary-button:hover {
     background: #304753;
 }
@@ -265,21 +308,25 @@ button {
    RESULTS
 ============================== */
 
+/* Controls the default font size and line spacing of forecast results. */
 .results-container {
     font-size: 13px;
     line-height: 1.7;
 }
 
+/* Removes the default top margin from headings inside the results area. */
 .results-container h3 {
     margin-top: 0;
 }
 
+/* Styles tables that JavaScript may insert into the forecast results. */
 .results-container table {
     border-collapse: collapse;
     margin-top: 15px;
     font-size: 12px;
 }
 
+/* Adds spacing and bottom borders to individual forecast table cells. */
 .results-container th,
 .results-container td {
     padding: 9px 5px;
@@ -287,24 +334,29 @@ button {
     border-bottom: 1px solid var(--border);
 }
 
+/* Highlights table headings using the accent color. */
 .results-container th {
     color: var(--accent);
 }
 
+/* Centers the placeholder shown before a location has been selected. */
 .empty-state {
     padding: 15px 5px;
     text-align: center;
 }
 
+/* Enlarges the decorative mountain symbol in the empty state. */
 .empty-icon {
     font-size: 32px;
 }
 
+/* Styles the empty-state heading. */
 .empty-state h3 {
     margin: 10px 0;
     font-size: 14px;
 }
 
+/* Styles the instructions displayed before a forecast is generated. */
 .empty-state p {
     color: var(--muted);
     font-size: 12px;
@@ -316,12 +368,15 @@ button {
    CHART
 ============================== */
 
+/* Creates a fixed-height area for the Chart.js canvas.
+   Position relative helps Chart.js size and position the chart correctly. */
 .chart-container {
     position: relative;
     width: 100%;
     height: 220px;
 }
 
+/* Styles the explanatory caption below the chart. */
 .chart-caption {
     margin-bottom: 0;
     color: var(--muted);
@@ -333,19 +388,23 @@ button {
    ROUTE PLANNER
 ============================== */
 
+/* Styles the decorative route symbol in the panel heading. */
 .route-icon {
     color: var(--accent);
     font-size: 22px;
 }
 
+/* Adds space below the route planner's action buttons. */
 .route-actions {
     margin-bottom: 12px;
 }
 
+/* Sets the default font size for the route list. */
 .route-container {
     font-size: 12px;
 }
 
+/* Styles the message displayed when the route contains no points. */
 .empty-route {
     color: var(--muted);
     text-align: center;
@@ -357,6 +416,7 @@ button {
    FOOTER
 ============================== */
 
+/* Controls the spacing, color, and alignment of the sidebar footer. */
 .sidebar-footer {
     padding: 10px 0;
     color: var(--muted);
@@ -364,6 +424,7 @@ button {
     text-align: center;
 }
 
+/* Styles the small separator symbol between footer items. */
 .sidebar-footer span {
     padding: 0 5px;
     color: var(--accent);
@@ -374,10 +435,12 @@ button {
    SCROLLBAR
 ============================== */
 
+/* Makes the sidebar's scrollbar narrower in browsers that support this selector. */
 #sidebar::-webkit-scrollbar {
     width: 6px;
 }
 
+/* Styles the draggable part of the sidebar scrollbar. */
 #sidebar::-webkit-scrollbar-thumb {
     background: var(--border);
     border-radius: 10px;
@@ -388,8 +451,11 @@ button {
    MOBILE LAYOUT
 ============================== */
 
+/* Applies these layout changes when the screen width is 800 pixels or less.
+   This makes the application easier to use on phones and smaller tablets. */
 @media (max-width: 800px) {
 
+    /* Stacks the map and sidebar vertically instead of placing them side by side. */
     .app-container {
         flex-direction: column;
         height: auto;
@@ -397,12 +463,14 @@ button {
         overflow: visible;
     }
 
+    /* Gives the map its own section at the top of the mobile layout. */
     .map-container {
         flex: none;
         height: 45vh;
         min-height: 300px;
     }
 
+    /* Makes the sidebar fill the screen width and allows the page to scroll normally. */
     #sidebar {
         width: 100%;
         min-width: 0;
@@ -412,11 +480,13 @@ button {
         border-left: none;
     }
 
+    /* Moves the map branding closer to the screen edges on mobile. */
     .map-overlay {
         top: 12px;
         left: 12px;
     }
 
+    /* Slightly reduces the main heading size on smaller screens. */
     .sidebar-header h1 {
         font-size: 22px;
     }
@@ -426,6 +496,7 @@ button {
    ROUTE PLANNER IMPROVEMENTS
 ============================== */
 
+/* Arranges the route buttons vertically and adds consistent spacing between them. */
 .route-actions {
     display: flex;
     flex-direction: column;
@@ -433,11 +504,15 @@ button {
     margin-bottom: 12px;
 }
 
+/* Ensures route planner buttons use the full available width.
+   Removes the default primary-button bottom margin inside this button group. */
 .route-actions button {
     width: 100%;
     margin: 0;
 }
 
+/* Styles each individual location displayed in the route list.
+   Flexbox separates the location information from its remove button. */
 .route-point {
     display: flex;
     align-items: center;
@@ -450,21 +525,25 @@ button {
     border-radius: 7px;
 }
 
+/* Makes the location name and its smaller coordinate details appear on separate lines. */
 .route-point strong,
 .route-point small {
     display: block;
 }
 
+/* Styles the name of each route location. */
 .route-point strong {
     font-size: 12px;
 }
 
+/* Styles the smaller coordinate information below each route location. */
 .route-point small {
     margin-top: 4px;
     color: var(--muted);
     font-size: 10px;
 }
 
+/* Styles the small button used to remove an individual route point. */
 .route-point .remove-route-point {
     width: 30px;
     min-width: 30px;
@@ -474,10 +553,13 @@ button {
     font-size: 20px;
 }
 
+/* Adds a subtle background when the user hovers over a route removal button. */
 .route-point .remove-route-point:hover {
     background: rgba(255, 128, 128, 0.12);
 }
 
+/* Changes the appearance of disabled buttons.
+   The wait cursor indicates that an action may still be processing. */
 button:disabled {
     opacity: 0.6;
     cursor: wait;
